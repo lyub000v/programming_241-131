@@ -1,13 +1,15 @@
 #include <iostream> 
 #include <clocale>
-int main() {          
+using namespace std;
+
+int main() {
     setlocale(LC_ALL, "Russian");
-    std::cout << "First string" << std::endl;
-    std::cout << "Первая строка\nВторая строка" << std::endl;
-    std::cout << "Спецсимволы \"\\\"" << std::endl;
+    cout << "First string" << endl;
+    cout << "Первая строка\nВторая строка" << endl;
+    cout << "Спецсимволы \"\\\"" << endl;
     return 0;
 
-}     
+}   
 
 
 #include <clocale>
@@ -15,27 +17,27 @@ int main() {
 using namespace std;
 
 int main() {
-    setlocale(LC_ALL, "Russian");
-    int intVar = 150;
-    float floatVar = 15.933;
-    unsigned char byteVar = 250;
-    cout << "intVar = " << intVar << endl;
-    cout << "floatVar = " << floatVar << endl;
-    cout << "byteVar = " << byteVar << endl;
+    setloca-le(LC_ALL, "Russian");
+    int cl = 150;
+    float fl = 15.933;
+    unsigned char tt = 250;
+    cout << "cl = " << cl << endl;
+    cout << "fl = " << fl << endl;
+    cout << "tt = " << tt << endl;
 
-    int day = 15;           
-    string month = "Май";   
-    int year = 1990;        
+    int d = 15;           
+    string m = "Май";   
+    int y = 1990;        
 
 
   
-    cout << "Моя дата рождения: " << day << " " << month << " " << year << " года" << endl;
+    cout << "Моя дата рождения: " << d << " " << m << " " << y << " года" << endl;
 
   
-    const float constantFloat = 2.3;
-    const string constantString = "WINDOWS";
+    const float cf = 2.3;
+    const string cs = "WINDOWS";
 
 
-    cout << constantFloat << " " << constantString << endl;
+    cout << cf << " " << cs << endl;
 
 }
