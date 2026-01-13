@@ -1,0 +1,95 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <unordered_map>
+#include <algorithm>
+
+using namespace std;
+
+int main() {
+    ifstream inputFile("input.txt");
+    ofstream outputFile("output.txt");
+    
+    if (!inputFile.is_open()) {
+        cerr << "Не удалось открыть input.txt" << endl;
+        return 1;
+    }
+    
+    if (!outputFile.is_open()) {
+        cerr << "Не удалось открыть output.txt" << endl;
+        return 1;
+    }
+    
+    unordered_map<int, int> numberCount;
+    
+    int num;
+    vector<int> result; 
+    
+    cout << "Начинаем обработку чисел из файла..." << endl;
+    
+    while (inputFile >> num) {
+        if (num == 0) {
+            cout << "Встречен 0. Начинаем вывод результата..." << endl;
+            break;
+        }
+        else if (num > 0) {
+            cout << "Добавляем число: " << num << endl;
+            
+            numberCount[num]++;
+            
+            if (numberCount[num] == 1) {
+                result.push_back(num);
+                cout << "  Это первое вхождение числа " << num << endl;
+            } else {
+                cout << "  Число " << num << " теперь встречается " << numberCount[num] << " раз(а)" << endl;
+            }
+        }
+        else {  
+            int positiveNum = -num;  
+            cout << "Удаляем число: " << positiveNum << " (получено из " << num << ")" << endl;
+            
+            auto it = numberCount.find(positiveNum);
+            if (it != numberCount.end()) {
+                it->second--;
+                cout << "  Количество вхождений числа " << positiveNum << " уменьшено до " << it->second << endl;
+                
+                if (it->second == 0) {
+                    numberCount.erase(it);
+                    cout << "  Число " << positiveNum << " полностью удалено из множества" << endl;
+                    
+                    auto vecIt = find(result.begin(), result.end(), positiveNum);
+                    if (vecIt != result.end()) {
+                        result.erase(vecIt);
+                        cout << "  Число " << positiveNum << " удалено из списка уникальных чисел" << endl;
+                    }
+                }
+            } else {
+                cout << "  Число " << positiveNum << " не найдено в множестве, ничего не делаем" << endl;
+            }
+        }
+    }
+    
+    cout << "\nСортируем числа по возрастанию..." << endl;
+    sort(result.begin(), result.end());
+    
+    cout << "Записываем результат в output.txt..." << endl;
+    
+    for (size_t i = 0; i < result.size(); i++) {
+        outputFile << result[i];
+        if (i != result.size() - 1) {
+            outputFile << " "; 
+        }
+    }
+    
+    inputFile.close();
+    outputFile.close();
+    
+    cout << "\nОбработка завершена успешно!" << endl;
+    cout << "Всего уникальных чисел: " << result.size() << endl;
+    cout << "Общее количество чисел (с учетом дубликатов): " << endl;
+    for (const auto& pair : numberCount) {
+        cout << "  Число " << pair.first << ": " << pair.second << " раз(а)" << endl;
+    }
+    
+    return 0;
+}
