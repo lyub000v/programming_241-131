@@ -1,0 +1,126 @@
+1)
+
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <climits>  // Для INT_MAX
+
+using namespace std;
+
+int main() {
+    int N, S, F;
+    cin >> N >> S >> F;
+    
+    S--; // Приводим к 0-based индексации
+    F--; // Приводим к 0-based индексации
+    
+    vector<vector<int>> graph(N, vector<int>(N));
+    
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            cin >> graph[i][j];
+        }
+    }
+    
+
+    vector<int> dist(N, INT_MAX);
+    dist[S] = 0;  // Расстояние от S до S равно 0
+    
+    vector<bool> visited(N, false);
+    
+    priority_queue<pair<int, int>, 
+                   vector<pair<int, int>>, 
+                   greater<pair<int, int>>> pq;
+    
+    pq.push({0, S});
+    
+    cout << "Начинаем алгоритм Дейкстры:" << endl;
+    cout << "Начальная вершина: " << S+1 << endl;
+    cout << "Конечная вершина: " << F+1 << endl;
+    cout << "=====================================" << endl;
+    
+    while (!pq.empty()) {
+        int currentDist = pq.top().first;
+        int currentVertex = pq.top().second;
+        pq.pop();
+        
+        if (visited[currentVertex]) {
+            continue;
+        }
+        
+        visited[currentVertex] = true;
+        
+        cout << "\nОбрабатываем вершину " << currentVertex+1 
+             << " с текущим расстоянием " << currentDist << endl;
+        
+        if (currentVertex == F) {
+            cout << "Достигнута конечная вершина!" << endl;
+            break;
+        }
+        
+        for (int neighbor = 0; neighbor < N; neighbor++) {
+            if (graph[currentVertex][neighbor] > 0) {
+                int edgeWeight = graph[currentVertex][neighbor];
+                int newDist = currentDist + edgeWeight;
+                
+                cout << "  Проверяем соседа " << neighbor+1 
+                     << " (вес ребра: " << edgeWeight << ")" << endl;
+                cout << "  Новое расстояние: " << currentDist << " + " 
+                     << edgeWeight << " = " << newDist << endl;
+                cout << "  Текущее кратчайшее расстояние до " << neighbor+1 
+                     << ": " << dist[neighbor] << endl;
+                
+                if (newDist < dist[neighbor]) {
+                    dist[neighbor] = newDist;
+                    pq.push({newDist, neighbor});
+                    
+                    cout << "  ✓ Обновляем расстояние до " << neighbor+1 
+                         << " на " << newDist << endl;
+                } else {
+                    cout << "  ✗ Не обновляем (новый путь не короче)" << endl;
+                }
+            } else if (graph[currentVertex][neighbor] == 0 && neighbor != currentVertex) {
+                int newDist = currentDist;
+                
+                cout << "  Проверяем соседа " << neighbor+1 
+                     << " (ребро нулевого веса)" << endl;
+                
+                if (newDist < dist[neighbor]) {
+                    dist[neighbor] = newDist;
+                    pq.push({newDist, neighbor});
+                    
+                    cout << "  ✓ Обновляем расстояние до " << neighbor+1 
+                         << " на " << newDist << endl;
+                }
+            }
+        }
+        
+        cout << "\nТекущие расстояния от вершины " << S+1 << ":" << endl;
+        for (int i = 0; i < N; i++) {
+            if (dist[i] == INT_MAX) {
+                cout << "  до " << i+1 << ": ∞" << endl;
+            } else {
+                cout << "  до " << i+1 << ": " << dist[i] << endl;
+            }
+        }
+        cout << "-------------------------------------" << endl;
+    }
+    
+    cout << "\n=====================================" << endl;
+    cout << "РЕЗУЛЬТАТ:" << endl;
+    cout << "=====================================" << endl;
+    
+    if (dist[F] == INT_MAX) {
+        cout << "Пути от вершины " << S+1 << " до вершины " << F+1 << " не существует!" << endl;
+        cout << -1 << endl;
+    } else {
+        cout << "Кратчайшее расстояние от вершины " << S+1 
+             << " до вершины " << F+1 << " равно " << dist[F] << endl;
+        cout << dist[F] << endl;
+    }
+    
+    return 0;
+}
+
+2)
+
