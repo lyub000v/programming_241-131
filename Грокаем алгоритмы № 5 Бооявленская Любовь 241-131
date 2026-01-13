@@ -1,0 +1,232 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <unordered_map>
+#include <unordered_set>
+#include <algorithm>
+
+using namespace std;
+unordered_map<char, vector<char>> createMazeGraph() {
+    unordered_map<char, vector<char>> graph;
+    
+    vector<char> rooms = {'S', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'};
+    for (char room : rooms) {
+        graph[room] = vector<char>();
+    }
+    
+    graph['S'].push_back('A');
+    graph['S'].push_back('B');
+    
+    graph['A'].push_back('S');
+    graph['A'].push_back('D');
+    
+    graph['B'].push_back('S');
+    graph['B'].push_back('C');
+    graph['B'].push_back('D');
+    
+    graph['C'].push_back('B');
+    graph['C'].push_back('D');
+    graph['C'].push_back('J');
+    
+    graph['D'].push_back('A');
+    graph['D'].push_back('B');
+    graph['D'].push_back('C');
+    graph['D'].push_back('E');
+    graph['D'].push_back('G');
+    
+    graph['E'].push_back('D');
+    graph['E'].push_back('F');
+    graph['E'].push_back('G');
+    
+    graph['F'].push_back('E');
+    graph['F'].push_back('G');
+    graph['F'].push_back('H');
+    
+    graph['G'].push_back('D');
+    graph['G'].push_back('E');
+    graph['G'].push_back('F');
+    graph['G'].push_back('H');
+    
+    graph['H'].push_back('F');
+    graph['H'].push_back('G');
+    graph['H'].push_back('I');
+    graph['H'].push_back('J');
+    
+    graph['I'].push_back('H');
+    graph['I'].push_back('J');
+    
+    graph['J'].push_back('C');
+    graph['J'].push_back('H');
+    graph['J'].push_back('I');
+    
+    return graph;
+}
+
+vector<char> bfsShortestPath(unordered_map<char, vector<char>>& graph, 
+                            char start, char target) {
+    
+    if (graph.find(start) == graph.end() || graph.find(target) == graph.end()) {
+        cout << "Ошибка: начальная или конечная точка не найдена в графе!" << endl;
+        return {};
+    }
+    
+    queue<char> q;
+    
+    unordered_set<char> visited;
+    
+    unordered_map<char, char> predecessor;
+    
+    q.push(start);
+    visited.insert(start);
+    predecessor[start] = '\0';  
+    
+    cout << "Начинаем поиск в ширину (BFS)..." << endl;
+    cout << "Старт: " << start << ", Цель: " << target << endl;
+    cout << "----------------------------------------" << endl;
+    
+    while (!q.empty()) {
+        char current = q.front();
+        q.pop();
+        
+        cout << "Обрабатываем комнату: " << current << endl;
+        
+        if (current == target) {
+            cout << "Найден выход в комнате " << target << "!" << endl;
+            break;
+        }
+        
+        vector<char>& neighbors = graph[current];
+        
+        for (char neighbor : neighbors) {
+            if (visited.find(neighbor) == visited.end()) {
+                visited.insert(neighbor);
+                
+                predecessor[neighbor] = current;
+                
+                q.push(neighbor);
+                
+                cout << "  Добавляем в очередь: " << neighbor 
+                     << " (пришли из " << current << ")" << endl;
+            }
+        }
+    }
+    
+    vector<char> path;
+    
+    if (visited.find(target) == visited.end()) {
+        cout << "Путь от " << start << " до " << target << " не найден!" << endl;
+        return path;
+    }
+    
+    while (current != '\0') {
+        path.push_back(current);
+        current = predecessor[current];
+    }
+    
+    reverse(path.begin(), path.end());
+    
+    return path;
+}
+
+void printPath(const vector<char>& path) {
+    if (path.empty()) {
+        cout << "Путь не найден!" << endl;
+        return;
+    }
+    
+    cout << "\n========================================" << endl;
+    cout << "КРАТЧАЙШИЙ ПУТЬ НАЙДЕН!" << endl;
+    cout << "========================================" << endl;
+    cout << "Длина пути: " << path.size() - 1 << " шагов" << endl;
+    cout << "Маршрут: ";
+    
+    for (size_t i = 0; i < path.size(); i++) {
+        cout << path[i];
+        if (i != path.size() - 1) {
+            cout << " -> ";
+        }
+    }
+    cout << endl;
+}
+
+void visualizeMaze() {
+    cout << "\nСХЕМА ЛАБИРИНТА:" << endl;
+    cout << "==============================" << endl;
+    cout << "        Выход [I]" << endl;
+    cout << "          ↑" << endl;
+    cout << "          [H]" << endl;
+    cout << "          ↑" << endl;
+    cout << "[F] ←→ [G] ←→ [E] ←→ [D]" << endl;
+    cout << "          ↓     ↓     ↓" << endl;
+    cout << "          [J]   [C]   [B]" << endl;
+    cout << "          ↓           ↓" << endl;
+    cout << "          [I]         [S]" << endl;
+    cout << "                     (вход)" << endl;
+    cout << "==============================" << endl;
+}
+
+int main() {
+    visualizeMaze();
+    
+    cout << "\nСоздаем граф лабиринта..." << endl;
+    unordered_map<char, vector<char>> maze = createMazeGraph();
+    
+    cout << "\nСтруктура лабиринта (комната → соседи):" << endl;
+    cout << "----------------------------------------" << endl;
+    for (const auto& pair : maze) {
+        cout << "Комната " << pair.first << " соединена с: ";
+        for (char neighbor : pair.second) {
+            cout << neighbor << " ";
+        }
+        cout << endl;
+    }
+    
+    char start = 'S';  // Вход
+    char target = 'I'; // Выход
+    
+    cout << "\nЗАПУСКАЕМ ПОИСК В ШИРИНУ (BFS)..." << endl;
+    vector<char> shortestPath = bfsShortestPath(maze, start, target);
+    
+    printPath(shortestPath);
+    
+    cout << "\n========================================" << endl;
+    cout << "ПОДРОБНЫЙ АНАЛИЗ ПУТИ:" << endl;
+    cout << "========================================" << endl;
+    
+    if (!shortestPath.empty()) {
+        cout << "Шаг 1: Начинаем в комнате S (вход)" << endl;
+        for (size_t i = 1; i < shortestPath.size(); i++) {
+            cout << "Шаг " << i + 1 << ": Переходим из " 
+                 << shortestPath[i-1] << " в " << shortestPath[i] << endl;
+        }
+        
+        cout << "\nВсего переходов: " << shortestPath.size() - 1 << endl;
+        cout << "Всего посещенных комнат: " << shortestPath.size() << endl;
+        
+        bool validPath = true;
+        for (size_t i = 1; i < shortestPath.size(); i++) {
+            char from = shortestPath[i-1];
+            char to = shortestPath[i];
+            
+            auto& neighbors = maze[from];
+            if (find(neighbors.begin(), neighbors.end(), to) == neighbors.end()) {
+                validPath = false;
+                cout << "\nВНИМАНИЕ: Некорректный переход " << from << " → " << to << "!" << endl;
+            }
+        }
+        
+        if (validPath) {
+            cout << "\n✓ Путь корректен!" << endl;
+        }
+    }
+    
+    cout << "\n========================================" << endl;
+    cout << "ДРУГИЕ ВОЗМОЖНЫЕ ПУТИ:" << endl;
+    cout << "========================================" << endl;
+    cout << "S → A → D → E → F → H → I (6 шагов)" << endl;
+    cout << "S → A → D → G → H → I (5 шагов)" << endl;
+    cout << "S → B → D → G → H → I (5 шагов)" << endl;
+    cout << "S → B → C → J → I (4 шага) ← НАЙДЕННЫЙ КРАТЧАЙШИЙ" << endl;
+    
+    return 0;
+}
