@@ -1,0 +1,325 @@
+1)
+
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+enum WeaponType {
+    ONEHANDED,   
+    TWOHANDED,   
+    BOW,         
+    CROSSBOW    
+};
+
+class Weapon {
+private:
+    string name;
+    int damage;
+    WeaponType type;
+    
+public:
+    Weapon() : name("Безымянное"), damage(10), type(ONEHANDED) {} 
+    
+    Weapon(string n, int d, WeaponType t) : name(n), damage(d), type(t) {} 
+    
+    string getName() { return name; }
+    int getDamage() { return damage; }
+    WeaponType getType() { return type; }
+};
+
+class MagicWeapon : public Weapon {
+private:
+    int additionalMagicDamage;
+    
+public:
+    MagicWeapon() : Weapon(), additionalMagicDamage(0) {}
+    
+    MagicWeapon(string n, int d, WeaponType t, int amd) 
+        : Weapon(n, d, t), additionalMagicDamage(amd) {}
+    
+    int getAdditionalMagicDamage() { return additionalMagicDamage; }
+    
+    int getTotalDamage() {
+        return getDamage() + additionalMagicDamage;
+    }
+};
+
+struct Player {
+    int id;           // уникальный идентификатор
+    string login;     // логин
+    string password;  // пароль
+    
+    void printPlayerInfo() {
+        cout << "=== Информация об игроке ===" << endl;
+        cout << "ID: " << id << endl;
+        cout << "Логин: " << login << endl;
+        cout << "Пароль: " << password << endl;
+        cout << "===========================" << endl;
+    }
+};
+
+int main() {
+    cout << "=== Тестирование класса Weapon ===" << endl;
+    
+    Weapon sword("Меч", 20, ONEHANDED);
+    Weapon bow("Лук", 15, BOW);
+    
+    cout << "Оружие: " << sword.getName() << endl;
+    cout << "Тип: ";
+    if (sword.getType() == ONEHANDED) {
+        cout << "Одноручное оружие" << endl;
+    } else if (sword.getType() == TWOHANDED) {
+        cout << "Двуручное оружие" << endl;
+    } else if (sword.getType() == BOW) {
+        cout << "Лук" << endl;
+    } else if (sword.getType() == CROSSBOW) {
+        cout << "Арбалет" << endl;
+    }
+    
+    cout << "\nОружие: " << bow.getName() << endl;
+    cout << "Тип: ";
+    switch (bow.getType()) {
+        case ONEHANDED: cout << "Одноручное оружие"; break;
+        case TWOHANDED: cout << "Двуручное оружие"; break;
+        case BOW: cout << "Лук"; break;
+        case CROSSBOW: cout << "Арбалет"; break;
+    }
+    cout << endl;
+    
+    cout << "\n=== Тестирование структуры Player ===" << endl;
+    
+    Player player1;
+    player1.id = 1;
+    player1.login = "warrior123";
+    player1.password = "securePass";
+    
+    player1.printPlayerInfo();
+    
+    cout << "\n=== Тестирование класса MagicWeapon ===" << endl;
+    
+    MagicWeapon defaultMagicWeapon;
+    cout << "Магическое оружие по умолчанию:" << endl;
+    cout << "Имя: " << defaultMagicWeapon.getName() << endl;
+    cout << "Базовый урон: " << defaultMagicWeapon.getDamage() << endl;
+    cout << "Доп. магический урон: " << defaultMagicWeapon.getAdditionalMagicDamage() << endl;
+    cout << "Общий урон: " << defaultMagicWeapon.getTotalDamage() << endl;
+    
+    MagicWeapon fireStaff("Огненный посох", 25, TWOHANDED, 15);
+    cout << "\nМагическое оружие с параметрами:" << endl;
+    cout << "Имя: " << fireStaff.getName() << endl;
+    cout << "Базовый урон: " << fireStaff.getDamage() << endl;
+    cout << "Доп. магический урон: " << fireStaff.getAdditionalMagicDamage() << endl;
+    cout << "Общий урон: " << fireStaff.getTotalDamage() << endl;
+    
+    cout << "\nТип оружия: ";
+    if (fireStaff.getType() == ONEHANDED) {
+        cout << "Одноручное оружие" << endl;
+    } else if (fireStaff.getType() == TWOHANDED) {
+        cout << "Двуручное оружие" << endl;
+    }
+    
+    return 0;
+}
+
+2)
+
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+enum WeaponType {
+    ONEHANDED,   
+    TWOHANDED,   
+    BOW,        
+    CROSSBOW     
+};
+
+class Weapon {
+protected:  
+    string name;
+    int damage;
+    WeaponType type;
+    
+public:
+    Weapon() : name("Безымянное"), damage(10), type(ONEHANDED) {
+        cout << "Создано базовое оружие (конструктор Weapon по умолчанию)" << endl;
+    }
+    
+    Weapon(string n, int d, WeaponType t) : name(n), damage(d), type(t) {
+        cout << "Создано базовое оружие: " << name << " (конструктор Weapon с параметрами)" << endl;
+    }
+    
+    string getName() const { return name; }
+    
+    virtual int getDamage() const { 
+        cout << "Вызван getDamage() из базового класса Weapon" << endl;
+        return damage; 
+    }
+    
+    WeaponType getType() const { return type; }
+    
+    virtual bool operator>(const Weapon& other) const {
+        cout << "Вызван operator> базового класса" << endl;
+        return this->getDamage() > other.getDamage();
+    }
+    
+    virtual bool operator<(const Weapon& other) const {
+        cout << "Вызван operator< базового класса" << endl;
+        return this->getDamage() < other.getDamage();
+    }
+    
+    virtual ~Weapon() {
+        cout << "Уничтожено оружие: " << name << endl;
+    }
+};
+
+class MagicWeapon : public Weapon {
+private:
+    int additionalMagicDamage;
+    
+public:
+    MagicWeapon() : Weapon(), additionalMagicDamage(0) {
+        cout << "Создано магическое оружие (конструктор MagicWeapon по умолчанию)" << endl;
+    }
+    
+    MagicWeapon(string n, int d, WeaponType t, int amd) 
+        : Weapon(n, d, t), additionalMagicDamage(amd) {
+        cout << "Создано магическое оружие: " << name << " (конструктор MagicWeapon с параметрами)" << endl;
+    }
+    
+    int getAdditionalMagicDamage() const { 
+        return additionalMagicDamage; 
+    }
+    
+    int getDamage() const override {
+        cout << "Вызван getDamage() из дочернего класса MagicWeapon" << endl;
+        return Weapon::getDamage() + additionalMagicDamage;
+    }
+    
+    bool operator>(const Weapon& other) const override {
+        cout << "Вызван operator> дочернего класса MagicWeapon" << endl;
+        return this->getDamage() > other.getDamage();
+    }
+    
+    bool operator<(const Weapon& other) const override {
+        cout << "Вызван operator< дочернего класса MagicWeapon" << endl;
+        return this->getDamage() < other.getDamage();
+    }
+    
+    ~MagicWeapon() override {
+        cout << "Уничтожено магическое оружие: " << name << endl;
+    }
+};
+
+void printWeaponDamage(const Weapon& weapon) {
+    cout << "Оружие '" << weapon.getName() << "' наносит " 
+         << weapon.getDamage() << " урона" << endl;
+}
+
+int main() {
+    cout << "=== Демонстрация виртуальных методов ===" << endl << endl;
+    
+    cout << "\n--- Создание обычного оружия ---" << endl;
+    Weapon sword("Стальной меч", 25, ONEHANDED);
+    Weapon bow("Длинный лук", 18, BOW);
+    
+    cout << "\n--- Создание магического оружия ---" << endl;
+    MagicWeapon fireStaff("Огненный посох", 20, TWOHANDED, 15);
+    MagicWeapon iceSword("Ледяной клинок", 22, ONEHANDED, 12);
+    
+    cout << "\n=== Проверка работы getDamage() ===" << endl;
+    
+    cout << "\n1. Вызов getDamage() для обычного оружия:" << endl;
+    cout << sword.getName() << ": ";
+    int swordDamage = sword.getDamage();
+    cout << "Урон: " << swordDamage << endl;
+    
+    cout << "\n2. Вызов getDamage() для магического оружия:" << endl;
+    cout << fireStaff.getName() << ": ";
+    int fireStaffDamage = fireStaff.getDamage();
+    cout << "Урон: " << fireStaffDamage << endl;
+    
+    cout << "\n3. Проверка, что getDamage() возвращает сумму базового и дополнительного урона:" << endl;
+    cout << "Базовый урон посоха: " << fireStaff.Weapon::getDamage() << endl;
+    cout << "Дополнительный магический урон: " << fireStaff.getAdditionalMagicDamage() << endl;
+    cout << "Общий урон (базовый + дополнительный): " 
+         << fireStaff.Weapon::getDamage() + fireStaff.getAdditionalMagicDamage() 
+         << " = " << fireStaffDamage << endl;
+    
+    cout << "\n=== Демонстрация полиморфизма ===" << endl;
+    
+    cout << "\n1. Через указатель на базовый класс:" << endl;
+    Weapon* weaponPtr = &fireStaff;
+    cout << "Тип указателя: Weapon*, объект: MagicWeapon" << endl;
+    cout << "Урон через указатель: " << weaponPtr->getDamage() << endl;
+    
+    cout << "\n2. Через ссылку на базовый класс:" << endl;
+    printWeaponDamage(fireStaff);
+    printWeaponDamage(sword);
+    
+    cout << "\n=== Проверка операторов сравнения ===" << endl;
+    
+    cout << "\n1. Сравнение обычного оружия:" << endl;
+    cout << sword.getName() << " (" << sword.getDamage() << " урона) > " 
+         << bow.getName() << " (" << bow.getDamage() << " урона): ";
+    if (sword > bow) {
+        cout << "ДА" << endl;
+    } else {
+        cout << "НЕТ" << endl;
+    }
+    
+    cout << "\n2. Сравнение магического оружия:" << endl;
+    cout << fireStaff.getName() << " (" << fireStaff.getDamage() << " урона) < " 
+         << iceSword.getName() << " (" << iceSword.getDamage() << " урона): ";
+    if (fireStaff < iceSword) {
+        cout << "ДА" << endl;
+    } else {
+        cout << "НЕТ" << endl;
+    }
+    
+    cout << "\n3. Сравнение обычного и магического оружия:" << endl;
+    cout << sword.getName() << " (" << sword.getDamage() << " урона) > " 
+         << fireStaff.getName() << " (" << fireStaff.getDamage() << " урона): ";
+    if (sword > fireStaff) {
+        cout << "ДА" << endl;
+    } else {
+        cout << "НЕТ" << endl;
+    }
+    
+    cout << "\n4. Сравнение через указатели (полиморфизм):" << endl;
+    Weapon* weapons[] = {&sword, &bow, &fireStaff, &iceSword};
+    const char* weaponNames[] = {"Меч", "Лук", "Огненный посох", "Ледяной клинок"};
+    
+    for (int i = 0; i < 4; i++) {
+        for (int j = i + 1; j < 4; j++) {
+            cout << weaponNames[i] << " > " << weaponNames[j] << ": ";
+            if (*weapons[i] > *weapons[j]) {
+                cout << "ДА" << endl;
+            } else {
+                cout << "НЕТ" << endl;
+            }
+        }
+    }
+    
+    cout << "\n5. Составные сравнения:" << endl;
+    cout << "Меч > Лук И Меч > Огненный посох: ";
+    if ((sword > bow) && (sword > fireStaff)) {
+        cout << "ДА" << endl;
+    } else {
+        cout << "НЕТ" << endl;
+    }
+    
+    cout << "\n6. Сравнение через цепочку:" << endl;
+    cout << "Меч > Лук > Огненный посох (все сравнения верны): ";
+    if ((sword > bow) && (bow > fireStaff)) {
+        cout << "ДА" << endl;
+    } else {
+        cout << "НЕТ" << endl;
+    }
+    
+    cout << "\n=== Программа завершена ===" << endl;
+    
+    return 0;
+}
