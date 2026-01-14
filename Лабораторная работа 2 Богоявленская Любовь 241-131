@@ -1,0 +1,285 @@
+1)
+
+#include <iostream> 
+
+using namespace std; 
+
+int main() {
+    double num1, num2; 
+    cout << "Введите первое число: "; 
+    cin >> num1; 
+    
+    cout << "Введите второе число: "; 
+    cin >> num2; 
+    
+    double average = (num1 + num2) / 2; 
+    cout << "Среднее арифметическое: " << average << endl;
+    
+    char operation;
+    cout << "Введите знак операции (+, -, *, /): "; 
+    cin >> operation; 
+    
+    /*
+    double result; 
+    
+    if (operation == '+') {
+        result = num1 + num2; 
+        cout << num1 << " + " << num2 << " = " << result << endl;
+    }
+    else if (operation == '-') {
+        result = num1 - num2; 
+        cout << num1 << " - " << num2 << " = " << result << endl;
+    }
+    else if (operation == '*') {
+        result = num1 * num2; 
+        cout << num1 << " * " << num2 << " = " << result << endl;
+    }
+    else if (operation == '/') {
+        if (num2 != 0) { 
+            result = num1 / num2; 
+            cout << num1 << " / " << num2 << " = " << result << endl;
+        } else {
+            cout << "Ошибка: деление на ноль!" << endl;
+        }
+    }
+    else {
+        cout << "Неверная операция!" << endl; 
+    }
+    */
+    
+    double result; 
+    bool validOperation = true; 
+    
+    switch (operation) {
+        case '+': 
+            result = num1 + num2;
+            cout << num1 << " + " << num2 << " = " << result << endl;
+            break; 
+            
+        case '-': 
+            result = num1 - num2;
+            cout << num1 << " - " << num2 << " = " << result << endl;
+            break;
+            
+        case '*': 
+            result = num1 * num2;
+            cout << num1 << " * " << num2 << " = " << result << endl;
+            break;
+            
+        case '/': 
+            if (num2 != 0) { 
+                result = num1 / num2;
+                cout << num1 << " / " << num2 << " = " << result << endl;
+            } else {
+                cout << "Ошибка: деление на ноль!" << endl;
+                validOperation = false;
+            }
+            break;
+            
+        default: 
+            cout << "Неверная операция!" << endl;
+            validOperation = false;
+    }
+    
+    return 0;
+}
+
+2)
+
+#include <iostream>
+
+using namespace std;
+
+int main() {
+    int number; 
+    
+    while (true) { 
+        cout << "Введите целое положительное число: "; 
+        cin >> number; 
+        
+        if (number > 0) { 
+            break; 
+        } else {
+            cout << "Ошибка! Число должно быть положительным. Попробуйте снова." << endl;
+        }
+    }
+    
+    int sum = 0; 
+    
+    cout << "Сумма чисел от 1 до " << number << ": "; 
+    
+    for (int i = 1; i <= number; i++) {
+        sum += i;
+        
+        cout << i;
+        
+        if (i < number) {
+            cout << " + ";
+        }
+    }
+    
+    cout << " = " << sum << endl;
+    
+    int numbersArray[10] = {5, 12, 8, 21, 3, 17, 9, 14, 6, 11}; 
+    
+    cout << "Элементы массива: ";
+    
+    for (int i = 0; i < 10; i++) {
+        cout << numbersArray[i]; 
+        
+        if (i < 9) {
+            cout << " ";
+        }
+    }
+    
+    cout << endl; 
+
+    cout << "Числа на чётных позициях (индексы 0, 2, 4, 6, 8): ";
+    
+    for (int i = 0; i < 10; i++) {
+        if (i % 2 == 0) { 
+            cout << numbersArray[i] << " "; 
+        }
+    }
+    
+    cout << endl; 
+    
+    int oddPositionsSum = 0; 
+    
+    cout << "Сумма элементов на нечётных позициях (индексы 1, 3, 5, 7, 9): ";
+    
+    for (int i = 0; i < 10; i++) {
+        if (i % 2 != 0) { // i % 2 != 0 эквивалентно i % 2 == 1
+            oddPositionsSum += numbersArray[i]; 
+        }
+    }
+    
+    cout << oddPositionsSum << endl;
+    
+    cout << "\nДемонстрация работы оператора % (остаток от деления):" << endl;
+    for (int i = 0; i < 10; i++) {
+        cout << "Индекс " << i << ": " << i << " % 2 = " << (i % 2);
+        if (i % 2 == 0) {
+            cout << " (чётный индекс)" << endl;
+        } else {
+            cout << " (нечётный индекс)" << endl;
+        }
+    }
+    
+    return 0; 
+}
+
+3)
+
+#include <iostream>
+
+using namespace std; 
+
+int sumFromOneToN(int n = 1) { 
+    if (n <= 0) { 
+        return 0;
+    }
+    
+    int sum = 0; 
+    for (int i = 1; i <= n; i++) { 
+        sum += i; 
+    }
+    return sum; 
+}
+
+void calculateSumAndProduct(int a, int b, int &sumRef, int &productRef) {
+    sumRef = a + b;      
+    productRef = a * b;   
+}
+
+int main() {
+    int twoDimArray[2][3] = { 
+        {1, 2, 3},  
+        {4, 5, 6}   
+    };
+    
+    int totalSum = 0; 
+    
+    for (int i = 0; i < 2; i++) {        
+        for (int j = 0; j < 3; j++) {    
+            totalSum += twoDimArray[i][j]; 
+        }
+    }
+    
+    cout << "1. Сумма всех чисел двумерного массива: " << totalSum << endl;
+    
+    int oneDimArray[3]; 
+    
+    for (int col = 0; col < 3; col++) { 
+        oneDimArray[col] = 0; 
+        
+        for (int row = 0; row < 2; row++) { 
+            oneDimArray[col] += twoDimArray[row][col]; 
+        }
+    }
+    
+    cout << "5. Одномерный массив сумм столбцов: ";
+    for (int i = 0; i < 3; i++) { 
+        cout << oneDimArray[i]; 
+        if (i < 2) { 
+            cout << " "; 
+        }
+    }
+    cout << endl;
+    
+    float floatVar = 20.84f; 
+    
+    float &ref1 = floatVar; 
+    float &ref2 = floatVar; 
+    
+    ref1 = 99.99f; 
+    
+    cout << "9. После изменения через ref1:" << endl;
+    cout << "   floatVar = " << floatVar << endl;
+    cout << "   ref1 = " << ref1 << endl;
+    cout << "   ref2 = " << ref2 << endl;
+    
+    cout << "\n10-11. Тестирование функции sumFromOneToN:" << endl;
+    cout << "   sumFromOneToN(-5) = " << sumFromOneToN(-5) << endl;
+    cout << "   sumFromOneToN(0) = " << sumFromOneToN(0) << endl;
+    cout << "   sumFromOneToN(3) = " << sumFromOneToN(3) << endl;
+    cout << "   sumFromOneToN(5) = " << sumFromOneToN(5) << endl;
+    cout << "   sumFromOneToN() = " << sumFromOneToN() << endl; 
+    
+    cout << "\n14. Тестирование функции calculateSumAndProduct:" << endl;
+    int x = 10, y = 5;
+    int sumResult, productResult; 
+    
+    cout << "   До вызова функции: x = " << x << ", y = " << y << endl;
+    cout << "   sumResult = " << sumResult << ", productResult = " << productResult << endl;
+    
+    calculateSumAndProduct(x, y, sumResult, productResult);
+    
+    cout << "   После вызова функции:" << endl;
+    cout << "   sumResult = " << sumResult << " (должно быть 15)" << endl;
+    cout << "   productResult = " << productResult << " (должно быть 50)" << endl;
+    
+    string message = "Привет, мир!"; 
+    
+    cout << "\n15. Созданная переменная: " << message << endl;
+    
+    cout << "\n16-18. Работа с циклом и локальными переменными:" << endl;
+    
+    for (int i = 0; i < 3; i++) {
+        cout << "   Итерация " << (i+1) << ": ";
+        cout << "twoDimArray[0][0] = " << twoDimArray[0][0] << endl;
+        
+        int localVar = i * 10; 
+        
+        cout << "   localVar внутри цикла = " << localVar << endl;
+    }
+    
+    cout << "\nПопытка вывести локальную переменную за пределами цикла:" << endl;
+    
+    cout << "Компилятор выдаст ошибку, так как localVar не существует вне цикла!" << endl;
+    
+    return 0; 
+}
+
+4)
+
