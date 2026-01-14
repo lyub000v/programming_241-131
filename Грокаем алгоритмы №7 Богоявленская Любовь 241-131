@@ -1,0 +1,285 @@
+1)
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+
+struct Lecture {
+    int start;  
+    int end;    
+    
+    Lecture(int s, int e) : start(s), end(e) {}
+};
+
+bool compareByEnd(const Lecture& a, const Lecture& b) {
+    return a.end < b.end;
+}
+
+int main() {
+    int N;
+    cin >> N;
+    
+    cout << "==========================================" << endl;
+    cout << "ЗАДАЧА О РАСПИСАНИИ ЛЕКЦИЙ" << endl;
+    cout << "==========================================" << endl;
+    cout << "Всего заявок: " << N << endl << endl;
+    
+    vector<Lecture> lectures;
+    
+    for (int i = 0; i < N; i++) {
+        int start, end;
+        cin >> start >> end;
+        lectures.push_back(Lecture(start, end));
+        
+        cout << "Заявка " << i+1 << ": [" << start << ", " << end << ")" << endl;
+    }
+    
+    
+    cout << "\n==========================================" << endl;
+    cout << "ШАГ 1: СОРТИРОВКА ПО ВРЕМЕНИ ОКОНЧАНИЯ" << endl;
+    cout << "==========================================" << endl;
+    cout << "Сортируем заявки в порядке возрастания времени окончания..." << endl;
+    
+    sort(lectures.begin(), lectures.end(), compareByEnd);
+    
+    cout << "Отсортированный список заявок:" << endl;
+    for (int i = 0; i < N; i++) {
+        cout << "Заявка " << i+1 << ": [" << lectures[i].start 
+             << ", " << lectures[i].end << ")" << endl;
+    }
+    
+    cout << "\n==========================================" << endl;
+    cout << "ШАГ 2: ЖАДНЫЙ АЛГОРИТМ ВЫБОРА" << endl;
+    cout << "==========================================" << endl;
+    cout << "Алгоритм:" << endl;
+    cout << "1. Всегда выбираем первую доступную заявку с наименьшим временем окончания" << endl;
+    cout << "2. Отбрасываем все заявки, которые пересекаются с выбранной" << endl;
+    cout << "3. Повторяем для оставшихся заявок" << endl << endl;
+    
+    if (lectures.empty()) {
+        cout << "Нет заявок. Максимальное количество: 0" << endl;
+        return 0;
+    }
+    
+    int lastEndTime = lectures[0].end;
+    int count = 1;
+    vector<Lecture> selectedLectures;
+    selectedLectures.push_back(lectures[0]);
+    
+    cout << "Выбираем заявку 1: [" << lectures[0].start 
+         << ", " << lectures[0].end << ")" << endl;
+    cout << "Последнее время окончания: " << lastEndTime << endl;
+    
+    for (int i = 1; i < N; i++) {
+        cout << "\nПроверяем заявку " << i+1 << ": [" 
+             << lectures[i].start << ", " << lectures[i].end << ")" << endl;
+        cout << "Начало: " << lectures[i].start 
+             << ", Последнее время окончания: " << lastEndTime << endl;
+        
+        if (lectures[i].start >= lastEndTime) {
+            count++;
+            lastEndTime = lectures[i].end;
+            selectedLectures.push_back(lectures[i]);
+            
+            cout << "✓ Заявка подходит! Выбираем её." << endl;
+            cout << "  Обновляем последнее время окончания: " << lastEndTime << endl;
+            cout << "  Количество выбранных заявок: " << count << endl;
+        } else {
+            cout << "✗ Заявка пересекается с последней выбранной. Пропускаем." << endl;
+            cout << "  Начало (" << lectures[i].start 
+                 << ") < последнего времени окончания (" << lastEndTime << ")" << endl;
+        }
+    }
+    
+    cout << "\n==========================================" << endl;
+    cout << "РЕЗУЛЬТАТ" << endl;
+    cout << "==========================================" << endl;
+    
+    cout << "Максимальное количество лекций, которые можно провести: " << count << endl;
+    cout << "\nВыбранные лекции:" << endl;
+    
+    for (int i = 0; i < selectedLectures.size(); i++) {
+        cout << i+1 << ". [" << selectedLectures[i].start 
+             << ", " << selectedLectures[i].end << ")" << endl;
+    }
+    
+    cout << "\nВременные интервалы выбранных лекций:" << endl;
+    for (int i = 0; i < selectedLectures.size(); i++) {
+        int startHour = selectedLectures[i].start / 60;
+        int startMin = selectedLectures[i].start % 60;
+        int endHour = selectedLectures[i].end / 60;
+        int endMin = selectedLectures[i].end % 60;
+        
+        cout << i+1 << ". " 
+             << startHour << ":" << (startMin < 10 ? "0" : "") << startMin
+             << " - "
+             << endHour << ":" << (endMin < 10 ? "0" : "") << endMin << endl;
+    }
+    
+    cout << "\nОтвет: " << count << endl;
+    
+    return 0;
+}
+
+2)
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <set>
+
+using namespace std;
+
+struct Box {
+    int weight;    
+    int capacity; 
+    
+    Box(int w, int c) : weight(w), capacity(c) {}
+};
+
+bool compareBoxes(const Box& a, const Box& b) {
+    int sum_a = a.weight + a.capacity;
+    int sum_b = b.weight + b.capacity;
+    
+    if (sum_a != sum_b) {
+        return sum_a < sum_b;
+    }
+    return a.capacity < b.capacity;
+}
+
+int main() {
+    int n;
+    cin >> n;
+    
+    cout << "==========================================" << endl;
+    cout << "ЗАДАЧА О КОРОБКАХ" << endl;
+    cout << "==========================================" << endl;
+    cout << "Количество коробок: " << n << endl << endl;
+    
+    vector<Box> boxes;
+    
+    for (int i = 0; i < n; i++) {
+        int w, c;
+        cin >> w >> c;
+        boxes.push_back(Box(w, c));
+        
+        cout << "Коробка " << i+1 << ": вес = " << w 
+             << ", грузоподъемность = " << c << endl;
+    }
+    
+    cout << "\n==========================================" << endl;
+    cout << "ШАГ 1: СОРТИРОВКА КОРОБОК" << endl;
+    cout << "==========================================" << endl;
+    cout << "Сортируем коробки по возрастанию (вес + грузоподъемность)..." << endl;
+    
+    sort(boxes.begin(), boxes.end(), compareBoxes);
+    
+    cout << "Отсортированный список коробок:" << endl;
+    for (int i = 0; i < n; i++) {
+        cout << i+1 << ". Вес: " << boxes[i].weight 
+             << ", Грузоподъемность: " << boxes[i].capacity
+             << ", Сумма: " << boxes[i].weight + boxes[i].capacity << endl;
+    }
+    
+    cout << "\n==========================================" << endl;
+    cout << "ШАГ 2: ПОСТРОЕНИЕ БАШНИ ИЗ КОРОБОК" << endl;
+    cout << "==========================================" << endl;
+    cout << "Алгоритм:" << endl;
+    cout << "1. Берем коробки в отсортированном порядке" << endl;
+    cout << "2. Если коробка может выдержать текущий общий вес, добавляем её" << endl;
+    cout << "3. Храним веса выбранных коробок в мультимножестве" << endl;
+    cout << "4. Если коробка не подходит, но она легче самой тяжелой в башне," << endl;
+    cout << "   заменяем самую тяжелую на эту более легкую" << endl << endl;
+    
+    multiset<int> selectedWeights;
+    long long totalWeight = 0;  
+    int count = 0;              
+    
+    for (int i = 0; i < n; i++) {
+        int currentWeight = boxes[i].weight;
+        int currentCapacity = boxes[i].capacity;
+        
+        cout << "\nОбрабатываем коробку " << i+1 << ":" << endl;
+        cout << "  Вес: " << currentWeight << endl;
+        cout << "  Грузоподъемность: " << currentCapacity << endl;
+        cout << "  Общий вес текущей башни: " << totalWeight << endl;
+        
+        if (currentCapacity >= totalWeight) {
+            selectedWeights.insert(currentWeight);
+            totalWeight += currentWeight;
+            count++;
+            
+            cout << "  ✓ Коробка может выдержать общий вес" << endl;
+            cout << "  Добавляем в башню" << endl;
+            cout << "  Новый общий вес: " << totalWeight << endl;
+            cout << "  Количество коробок в башне: " << count << endl;
+        } 
+        else {
+            
+            if (!selectedWeights.empty()) {
+                int heaviest = *selectedWeights.rbegin(); 
+                
+                cout << "  ✗ Коробка не может выдержать общий вес" << endl;
+                cout << "  Самая тяжелая коробка в башне: " << heaviest << endl;
+                
+                if (currentWeight < heaviest) {
+                    selectedWeights.erase(--selectedWeights.end());
+                    totalWeight -= heaviest;
+                    
+                    selectedWeights.insert(currentWeight);
+                    totalWeight += currentWeight;
+                    
+                    cout << "  Заменяем самую тяжелую коробку на текущую" << endl;
+                    cout << "  Новый общий вес: " << totalWeight << endl;
+                    cout << "  Количество коробок осталось: " << count << endl;
+                    
+                } else {
+                    cout << "  Текущая коробка не легче самой тяжелой, пропускаем" << endl;
+                }
+            } else {
+                cout << "  Башня пустая, но коробка не может выдержать даже свой вес?" << endl;
+                cout << "  (это странно, но пропускаем)" << endl;
+            }
+        }
+        
+        cout << "  Текущая башня (веса коробок снизу вверх): ";
+        if (selectedWeights.empty()) {
+            cout << "пустая";
+        } else {
+            for (int w : selectedWeights) {
+                cout << w << " ";
+            }
+        }
+        cout << endl;
+    }
+    
+    cout << "\n==========================================" << endl;
+    cout << "РЕЗУЛЬТАТ" << endl;
+    cout << "==========================================" << endl;
+    
+    cout << "Максимальное количество коробок в башне: " << count << endl;
+    
+    cout << "\nПроверка корректности построенной башни:" << endl;
+    
+    long long cumulativeWeight = 0;
+    bool isValid = true;
+    int level = 1;
+    
+    multiset<int> checkWeights = selectedWeights;
+    
+    for (int w : checkWeights) {
+        cout << "Уровень " << level << ": вес коробки = " << w 
+             << ", общий вес сверху = " << cumulativeWeight;
+        
+        cout << " ✓" << endl;
+        
+        cumulativeWeight += w;
+        level++;
+    }
+    
+    cout << "\nОтвет: " << count << endl;
+    
+    return 0;
+}
