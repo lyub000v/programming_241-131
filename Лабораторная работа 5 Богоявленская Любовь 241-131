@@ -323,3 +323,264 @@ int main() {
     
     return 0;
 }
+
+3)
+
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+enum WeaponType {
+    ONEHANDED,   
+    TWOHANDED,   
+    BOW,         
+    CROSSBOW     
+};
+
+class Weapon {
+protected:
+    string name;
+    int damage;
+    WeaponType type;
+    
+public:
+    Weapon() : name("Безымянное"), damage(10), type(ONEHANDED) {
+        cout << "Создано базовое оружие (конструктор Weapon)" << endl;
+    }
+    
+    Weapon(string n, int d, WeaponType t) : name(n), damage(d), type(t) {
+        cout << "Создано базовое оружие: " << name << endl;
+    }
+    
+    string getName() const { return name; }
+    
+    virtual int getDamage() const { 
+        return damage; 
+    }
+    
+    WeaponType getType() const { return type; }
+    
+    virtual void Attack() const = 0; 
+    
+    virtual ~Weapon() {
+        cout << "Уничтожено оружие: " << name << endl;
+    }
+    
+    virtual bool operator>(const Weapon& other) const {
+        return this->getDamage() > other.getDamage();
+    }
+    
+    virtual bool operator<(const Weapon& other) const {
+        return this->getDamage() < other.getDamage();
+    }
+};
+
+class MagicWeapon : public Weapon {
+private:
+    int additionalMagicDamage;
+    
+public:
+    MagicWeapon() : Weapon(), additionalMagicDamage(0) {
+        cout << "Создано магическое оружие (конструктор MagicWeapon)" << endl;
+    }
+    
+    MagicWeapon(string n, int d, WeaponType t, int amd) 
+        : Weapon(n, d, t), additionalMagicDamage(amd) {
+        cout << "Создано магическое оружие: " << name << endl;
+    }
+    
+    int getAdditionalMagicDamage() const { 
+        return additionalMagicDamage; 
+    }
+    
+    int getDamage() const override {
+        return Weapon::getDamage() + additionalMagicDamage;
+    }
+    
+    void Attack() const override {
+        cout << name << ": Атакуем магическим оружием! Нанесено " 
+             << getDamage() << " урона" << endl;
+    }
+    
+    ~MagicWeapon() override {
+        cout << "Уничтожено магическое оружие: " << name << endl;
+    }
+};
+
+class DisposableWeapon : public Weapon {
+private:
+    mutable bool isUsed; 
+public:
+    DisposableWeapon() : Weapon(), isUsed(false) {
+        cout << "Создано одноразовое оружие (конструктор DisposableWeapon)" << endl;
+    }
+    
+    DisposableWeapon(string n, int d, WeaponType t) 
+        : Weapon(n, d, t), isUsed(false) {
+        cout << "Создано одноразовое оружие: " << name << endl;
+    }
+    
+    bool getIsUsed() const {
+        return isUsed;
+    }
+    
+    void Attack() const override {
+        if (isUsed) {
+            cout << name << ": Оружие уже было использовано!" << endl;
+        } else {
+            cout << name << ": Атакуем одноразовым оружием! Нанесено " 
+                 << getDamage() << " урона" << endl;
+            isUsed = true;
+        }
+    }
+    
+    ~DisposableWeapon() override {
+        cout << "Уничтожено одноразовое оружие: " << name << endl;
+    }
+};
+
+template<typename TLeft, typename TRight>
+class DualWield {
+private:
+    TLeft leftHand;    
+    TRight rightHand;  
+    
+public:
+    DualWield(const TLeft& left, const TRight& right) 
+        : leftHand(left), rightHand(right) {
+        cout << "Создана экипировка для двуручного боя" << endl;
+    }
+    
+    TLeft getLeftHand() const {
+        return leftHand;
+    }
+    
+    TRight getRightHand() const {
+        return rightHand;
+    }
+    
+    void setLeftHand(const TLeft& newLeft) {
+        leftHand = newLeft;
+        cout << "Изменено оружие в левой руке" << endl;
+    }
+    
+    void setRightHand(const TRight& newRight) {
+        rightHand = newRight;
+        cout << "Изменено оружие в правой руке" << endl;
+    }
+    
+    void attackWithBoth() const {
+        cout << "=== Атака обеими руками ===" << endl;
+        cout << "Левая рука: ";
+        
+        if constexpr (is_base_of_v<Weapon, TLeft>) {
+            leftHand.Attack();
+        } else {
+            cout << "ID оружия: " << leftHand << " (просто число)" << endl;
+        }
+        
+        cout << "Правая рука: ";
+        if constexpr (is_base_of_v<Weapon, TRight>) {
+            rightHand.Attack();
+        } else {
+            cout << "ID оружия: " << rightHand << " (просто число)" << endl;
+        }
+        cout << "==========================" << endl;
+    }
+};
+
+int main() {
+    cout << "=== Демонстрация абстрактных классов и шаблонов ===" << endl << endl;
+    
+    cout << "--- Попытка создать объект абстрактного класса Weapon ---" << endl;
+    
+    cout << "Ошибка компиляции! Нельзя создать объект абстрактного класса Weapon" << endl;
+    cout << "Компилятор не позволяет это сделать, потому что класс содержит" << endl;
+    cout << "чисто виртуальную функцию Attack()" << endl << endl;
+    
+    cout << "--- Создание магического оружия ---" << endl;
+    MagicWeapon fireStaff("Огненный посох", 20, TWOHANDED, 15);
+    
+    cout << "\n--- Вызов метода Attack у магического оружия ---" << endl;
+    fireStaff.Attack();
+    
+    cout << "\n--- Создание одноразового оружия ---" << endl;
+    DisposableWeapon throwingKnife("Метательный нож", 25, ONEHANDED);
+    
+    cout << "\n--- Двойной вызов метода Attack у одноразового оружия ---" << endl;
+    cout << "Первый вызов Attack():" << endl;
+    throwingKnife.Attack();
+    
+    cout << "\nПроверка состояния оружия (isUsed): " 
+         << (throwingKnife.getIsUsed() ? "true" : "false") << endl;
+    
+    cout << "\nВторой вызов Attack():" << endl;
+    throwingKnife.Attack();
+    
+    cout << "\nПроверка состояния оружия (isUsed): " 
+         << (throwingKnife.getIsUsed() ? "true" : "false") << endl;
+    
+    cout << "\n=== Работа с шаблонными классами ===" << endl;
+    
+    cout << "\n--- Пример 1: два объекта оружия ---" << endl;
+    MagicWeapon leftMagic("Магический кинжал", 18, ONEHANDED, 8);
+    DisposableWeapon rightDisposable("Священный гранатомёт", 40, TWOHANDED);
+    
+    DualWield<MagicWeapon, DisposableWeapon> warrior1(leftMagic, rightDisposable);
+    cout << "\nВызываем атаку обеими руками:" << endl;
+    warrior1.attackWithBoth();
+    
+    cout << "\n--- Пример 2: целые числа (ID оружия) ---" << endl;
+    int leftId = 1001;  // ID оружия в левой руке
+    int rightId = 1002; // ID оружия в правой руке
+    
+    DualWield<int, int> warrior2(leftId, rightId);
+    cout << "\nВызываем атаку обеими руками (выводятся ID):" << endl;
+    warrior2.attackWithBoth();
+    
+    cout << "\n--- Пример 3: смешанные типы (оружие + ID) ---" << endl;
+    MagicWeapon mainWeapon("Посох дракона", 30, TWOHANDED, 20);
+    int shieldId = 2001; // ID щита
+    
+    DualWield<MagicWeapon, int> mage(mainWeapon, shieldId);
+    cout << "\nВызываем атаку обеими руками:" << endl;
+    mage.attackWithBoth();
+    
+    cout << "\n--- Демонстрация SET-методов ---" << endl;
+    
+    DisposableWeapon newWeapon("Запасной нож", 15, ONEHANDED);
+    
+    warrior1.setRightHand(newWeapon);
+    
+    cout << "\nПовторная атака после смены оружия:" << endl;
+    warrior1.attackWithBoth();
+    
+    cout << "\n--- Работа с указателями и полиморфизмом ---" << endl;
+    
+    Weapon* weapons[3];
+    
+    weapons[0] = new MagicWeapon("Артефактный меч", 35, ONEHANDED, 25);
+    
+    weapons[1] = new DisposableWeapon("Ядовитая стрела", 20, BOW);
+    
+    weapons[2] = new MagicWeapon("Ледяной скипетр", 22, ONEHANDED, 18);
+    
+    cout << "\nАтака всех объектов через указатели:" << endl;
+    for (int i = 0; i < 3; i++) {
+        weapons[i]->Attack();
+        cout << endl;
+    }
+    
+    cout << "Повторная атака одноразового оружия:" << endl;
+    weapons[1]->Attack();
+    
+    cout << "\n--- Освобождение памяти ---" << endl;
+    for (int i = 0; i < 3; i++) {
+        delete weapons[i];
+    }
+    
+    cout << "\n=== Программа завершена ===" << endl;
+    
+    return 0;
+}
