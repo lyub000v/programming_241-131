@@ -1,0 +1,393 @@
+1)
+
+#include <iostream>   
+#include <string>     
+using namespace std;  
+
+int main() {          
+    string userString;
+    cout << "Введите строку: "; 
+    getline(cin, userString);   
+    
+    if (userString.length() >= 4) { 
+        cout << "Подстрока с 2-го по 4-й символ: " 
+             << userString.substr(1, 3) << endl;
+    } else {
+        cout << "Строка слишком короткая для выделения подстроки" << endl;
+    }
+    
+    size_t foundIndex = userString.find('a'); 
+    
+    if (foundIndex != string::npos) { 
+        cout << "Первое вхождение символа 'a' на позиции: " 
+             << foundIndex + 1 << endl; 
+    } else {
+        cout << "Символа a не найдено" << endl;
+    }
+    
+    return 0; 
+}
+
+2)
+
+#include <iostream>    
+#include <string>      
+#include <regex>       
+#include <vector>     
+
+using namespace std;   
+
+int main() {          
+    string userName;   
+    cout << "Введите ваше имя: ";  
+    getline(cin, userName);        
+
+    regex namePattern("^[A-Z][a-zA-Z]{1,31}$");
+    
+    if (regex_match(userName, namePattern)) {
+        cout << "Имя '" << userName << "' корректно!" << endl;
+    } else {
+        cout << "Ошибка! Имя должно быть от 2 до 32 символов, " 
+             << "начинаться с заглавной буквы и содержать только буквы." << endl;
+    }
+    
+    
+    string textWithEmails = R"(
+        Привет! Моя почта для работы: work.email123@company.com.
+        Также есть личная: john.doe_1990@gmail.com.
+        Для рассылок использую: newsletter@sub.domain.org.
+        Старый адрес: user-name@server.co.uk, но он уже неактивен.
+        Контакты для связи: support@mysite.ru и info@test-site.com.
+    )";
+    
+    cout << "\nИсходный текст:\n" << textWithEmails << endl;
+    
+    regex emailPattern(R"([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})");
+    
+    auto words_begin = sregex_iterator(textWithEmails.begin(), textWithEmails.end(), emailPattern);
+    auto words_end = sregex_iterator();  
+    
+    int emailCount = distance(words_begin, words_end);
+    cout << "\nНайдено email-адресов: " << emailCount << endl;
+    
+    if (emailCount > 0) {
+        cout << "Список email-адресов:" << endl;
+        
+        vector<string> emails;
+        
+        words_begin = sregex_iterator(textWithEmails.begin(), textWithEmails.end(), emailPattern);
+        
+        for (sregex_iterator i = words_begin; i != words_end; ++i) {
+            smatch match = *i;           
+            emails.push_back(match.str()); 
+        }
+        
+        for (size_t i = 0; i < emails.size(); ++i) {
+            cout << i + 1 << ". " << emails[i] << endl;
+        }
+    } else {
+        cout << "Email-адреса не найдены." << endl;
+    }
+    
+    return 0;  
+}
+
+3)
+
+#include <iostream>   
+#include <fstream>  
+#include <string>     
+#include <cmath>      
+#include <iomanip>    
+using namespace std;  
+void calculateCircle() {
+    double radius;  
+    
+    cout << "Введите радиус окружности: ";
+    cin >> radius;
+    
+    if (cin.fail() || radius <= 0) {
+        cout << "Ошибка! Радиус должен быть положительным числом." << endl;
+        cin.clear();  
+        cin.ignore(10000, '\n'); 
+        return;
+    }
+    
+    double circumference = 2 * M_PI * radius;  
+    cout << "Длина окружности: " << circumference << endl;
+    
+    cout << fixed << setprecision(3);  
+    cout << "Длина окружности (округлено до 3 знаков): " << circumference << endl;
+    cout << resetiosflags(ios::fixed);  
+}
+
+void workWithFile() {
+    string userInput;           
+    string fileName = "data.txt";  
+    
+    ofstream outFile(fileName, ios::app);
+    if (!outFile) {
+        cout << "Ошибка открытия файла для записи!" << endl;
+        return;
+    }
+    outFile.close(); 
+    
+    cout << "\nРежим работы с файлом. Команды:" << endl;
+    cout << "- Введите текст для добавления в файл" << endl;
+    cout << "- 'read' - прочитать содержимое файла" << endl;
+    cout << "- 'erase' - очистить файл" << endl;
+    cout << "- 'exit' - завершить программу" << endl;
+    
+    while (true) {
+        cout << "\nВведите строку или команду: ";
+        getline(cin, userInput);  
+        
+        if (userInput == "exit") {
+            cout << "Завершение программы." << endl;
+            break;  
+        }
+        
+        else if (userInput == "read") {
+            ifstream inFile(fileName);
+            if (!inFile) {
+                cout << "Ошибка открытия файла для чтения!" << endl;
+                continue;
+            }
+            
+            cout << "\nСодержимое файла '" << fileName << "':" << endl;
+            cout << "----------------------------------------" << endl;
+            
+            string line;
+            int lineNumber = 1;
+            
+            while (getline(inFile, line)) {
+                cout << lineNumber << ": " << line << endl;
+                lineNumber++;
+            }
+            
+            if (lineNumber == 1) {
+                cout << "(файл пуст)" << endl;
+            }
+            
+            cout << "----------------------------------------" << endl;
+            inFile.close(); 
+        }
+        
+        else if (userInput == "erase") {
+            ofstream clearFile(fileName, ios::trunc);
+            if (!clearFile) {
+                cout << "Ошибка очистки файла!" << endl;
+            } else {
+                cout << "Файл успешно очищен." << endl;
+                clearFile.close();
+            }
+        }
+        
+        else {
+            ofstream appendFile(fileName, ios::app);
+            if (!appendFile) {
+                cout << "Ошибка открытия файла для записи!" << endl;
+                continue;
+            }
+            
+            
+            appendFile << userInput << endl;
+            appendFile.close(); 
+            
+            cout << "Строка добавлена в файл." << endl;
+        }
+    }
+}
+
+int main() {  
+    cout << fixed << setprecision(3); 
+    
+    calculateCircle();
+    
+    cin.ignore(10000, '\n');
+    
+    workWithFile();
+    
+    return 0;  
+}
+
+4)
+
+#include <iostream>  
+#include <vector>    
+#include <map>        
+#include <string>     
+
+using namespace std;  
+
+void vectorOperations() {
+    vector<float> floatVector;
+    cout << "1. Создан пустой вектор типа float" << endl;
+    
+    floatVector.push_back(1.1f);  
+    floatVector.push_back(2.2f);
+    floatVector.push_back(3.3f);
+    floatVector.push_back(4.4f);
+    floatVector.push_back(5.5f);
+    
+    cout << "2. Добавлено 5 элементов: ";
+    for (size_t i = 0; i < floatVector.size(); i++) {
+        cout << floatVector[i];
+        if (i < floatVector.size() - 1) cout << ", ";
+    }
+    cout << endl;
+    
+    auto printVector = [](const vector<float>& vec, const string& message = "") {
+        if (!message.empty()) {
+            cout << message << endl;
+        }
+        cout << "Элементы вектора (" << vec.size() << "): ";
+        for (size_t i = 0; i < vec.size(); i++) {
+            cout << vec[i];
+            if (i < vec.size() - 1) cout << ", ";
+        }
+        cout << endl;
+    };
+    
+    printVector(floatVector, "4. Вывод вектора с помощью функции:");
+    
+    auto it = floatVector.begin() + 3; 
+    floatVector.insert(it, 3.75f);      
+    cout << "5. Вставлен элемент 3.75 между 3-м и 4-м элементами" << endl;
+    
+    printVector(floatVector, "6. Вектор после вставки:");
+    
+    floatVector.pop_back(); 
+    cout << "7. Удалён последний элемент" << endl;
+    
+    printVector(floatVector, "8. Вектор после удаления последнего элемента:");
+}
+
+class Settings {
+private:
+    // map<string, string> settingsMap; 
+    
+    static map<string, string> settingsMap;  
+public:
+    // void Add(const string& key, const string& value) {
+    //     settingsMap[key] = value;  
+    //     cout << "Добавлена пара: " << key << " -> " << value << endl;
+    // }
+    
+    static void Add(const string& key, const string& value) {
+        settingsMap[key] = value;  
+        cout << "Добавлена пара: " << key << " -> " << value << endl;
+    }
+    
+    // string Get(const string& key) const {
+    //     
+    //     auto it = settingsMap.find(key);
+    //     if (it != settingsMap.end()) {
+    //         return it->second; 
+    //     }
+    //     return "Ключ не найден";  
+    // }
+    
+    static string Get(const string& key) {
+        auto it = settingsMap.find(key);
+        if (it != settingsMap.end()) {
+            return it->second;
+        }
+        return "Ключ не найден";
+    }
+    
+    // void Print() const {
+    //     cout << "Настройки (" << settingsMap.size() << "):" << endl;
+    //     if (settingsMap.empty()) {
+    //         cout << "  (пусто)" << endl;
+    //     } else {
+    //         for (const auto& pair : settingsMap) {
+    //             cout << "  " << pair.first << " -> " << pair.second << endl;
+    //         }
+    //     }
+    // }
+    
+    static void Print() {
+        cout << "Настройки (" << settingsMap.size() << "):" << endl;
+        if (settingsMap.empty()) {
+            cout << "  (пусто)" << endl;
+        } else {
+            for (const auto& pair : settingsMap) {
+                cout << "  " << pair.first << " -> " << pair.second << endl;
+            }
+        }
+    }
+};
+
+map<string, string> Settings::settingsMap;
+
+void testNonStaticSettings() {
+    cout << "\n=== Пункты 9-13: Тестирование класса Settings (нестатические методы) ===" << endl;
+    
+    Settings settings1; 
+    
+  
+    settings1.Add("language", "Russian");
+    settings1.Add("theme", "Dark");
+    settings1.Add("resolution", "1920x1080");
+    
+   
+    cout << "Получение значений:" << endl;
+    cout << "  language: " << settings1.Get("language") << endl;
+    cout << "  theme: " << settings1.Get("theme") << endl;
+    cout << "  non_existing: " << settings1.Get("non_existing") << endl;
+    
+    
+    cout << "\nВсе настройки:" << endl;
+    settings1.Print();
+    
+   
+    Settings settings2;
+    cout << "\nСоздан второй экземпляр Settings" << endl;
+    settings2.Add("volume", "80"); 
+    cout << "\nНастройки первого экземпляра:" << endl;
+    settings1.Print();
+}
+
+
+void testStaticSettings() {
+    cout << "\n=== Пункты 14-15: Тестирование класса Settings (статические методы) ===" << endl;
+    
+   
+    
+  
+    Settings::Add("language", "English");
+    Settings::Add("theme", "Light");
+    Settings::Add("resolution", "1280x720");
+    Settings::Add("font_size", "14");
+    
+   
+    cout << "Получение значений:" << endl;
+    cout << "  language: " << Settings::Get("language") << endl;
+    cout << "  theme: " << Settings::Get("theme") << endl;
+    cout << "  font_size: " << Settings::Get("font_size") << endl;
+    cout << "  non_existing: " << Settings::Get("non_existing") << endl;
+    
+   
+    cout << "\nВсе настройки (статическое поле):" << endl;
+    Settings::Print();
+    
+  
+    cout << "\nДобавляем ещё одну настройку..." << endl;
+    Settings::Add("timeout", "30");
+    cout << "\nОбновлённый список настроек:" << endl;
+    Settings::Print();
+}
+
+int main() {
+    cout << "=== Работа с векторами ===" << endl;
+    vectorOperations();  
+    
+   
+    // testNonStaticSettings(); 
+    
+  
+    testStaticSettings();
+    
+    return 0;
+}
