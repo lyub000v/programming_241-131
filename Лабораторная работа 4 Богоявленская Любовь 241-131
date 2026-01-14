@@ -1,0 +1,514 @@
+1)
+
+#include <iostream>
+#include <string>
+
+class Weapon {
+private:
+    std::string name;    
+    int damage;          
+    float weight;        
+
+public:
+    Weapon(std::string weaponName, int weaponDamage, float weaponWeight) {
+        name = weaponName;
+        damage = weaponDamage;
+        weight = weaponWeight;
+        std::cout << "Создан объект с параметрами: " << name << std::endl;
+    }
+
+    Weapon() : Weapon("Стандартный меч", 10, 2.5f) {
+        std::cout << "Создан объект со значениями по умолчанию" << std::endl;
+    }
+
+    void displayInfo() {
+        std::cout << "Название: " << name << std::endl;
+        std::cout << "Урон: " << damage << std::endl;
+        std::cout << "Вес: " << weight << " кг" << std::endl;
+        std::cout << "-------------------" << std::endl;
+    }
+};
+
+int main() {
+    
+    std::cout << "=== Создание первого объекта ===" << std::endl;
+    Weapon weapon1;  
+    
+    std::cout << "\n=== Создание второго объекта ===" << std::endl;
+    Weapon weapon2("Огненный посох", 25, 1.8f);  
+    
+    std::cout << "\n=== Информация об оружии ===" << std::endl;
+    
+    std::cout << "Оружие 1:" << std::endl;
+    weapon1.displayInfo(); 
+
+    std::cout << "Оружие 2:" << std::endl;
+    weapon2.displayInfo();
+    
+    return 0;
+}
+
+2)
+
+#include <iostream>
+#include <string>
+
+class Weapon {
+private:
+    std::string name;
+    int damage;
+    float weight;
+
+public:
+    Weapon(std::string weaponName, int weaponDamage, float weaponWeight) {
+        name = weaponName;
+        damage = weaponDamage;
+        weight = weaponWeight;
+        std::cout << "Создан: " << name << std::endl;
+    }
+
+    Weapon() : Weapon("Стандартный меч", 10, 2.5f) {
+        std::cout << "Создан объект по умолчанию" << std::endl;
+    }
+
+    ~Weapon() {
+        std::cout << "Удаляется оружие: " << name << std::endl;
+        std::cout << "  Урон: " << damage << std::endl;
+        std::cout << "  Вес: " << weight << " кг" << std::endl;
+        std::cout << "------------------------" << std::endl;
+    }
+
+    void displayInfo() {
+        std::cout << "Информация об оружии:" << std::endl;
+        std::cout << "  Название: " << name << std::endl;
+        std::cout << "  Урон: " << damage << std::endl;
+        std::cout << "  Вес: " << weight << " кг" << std::endl;
+    }
+
+    bool canLift(float maxWeight) {
+        return weight > maxWeight;
+    }
+
+    float getTotalWeightOld(Weapon otherWeapon) {
+        return weight + otherWeapon.weight;
+    }
+
+    float getTotalWeight(float otherWeight) {
+        return weight + otherWeight;
+    }
+
+    float getTotalWeight(Weapon otherWeapon) {
+        return getTotalWeight(otherWeapon.weight);
+    }
+};
+
+int main() {
+    std::cout << "=== Часть 1: Создание обычного объекта ===" << std::endl;
+    
+    Weapon sword("Меч рыцаря", 15, 3.2f);
+    
+    sword.displayInfo();
+    std::cout << std::endl;
+
+    std::cout << "\n=== Часть 2: Создание динамического объекта ===" << std::endl;
+    
+    Weapon* bow = new Weapon("Лук разведчика", 8, 1.5f);
+    
+    bow->displayInfo();
+    std::cout << std::endl;
+
+    std::cout << "\n=== Проверка деструкторов ===" << std::endl;
+    
+    std::cout << "Удаляем динамический объект:" << std::endl;
+    delete bow;  
+    
+    std::cout << "\nВыходим из main() - удаляем обычный объект:" << std::endl;
+    
+    
+    std::cout << "\n=== Часть 3: Проверка новых методов ===" << std::endl;
+    
+    Weapon heavyAxe("Тяжелый топор", 20, 5.8f);
+    
+    std::cout << "\nПроверка метода canLift():" << std::endl;
+    float characterStrength = 4.0f;  
+    
+    std::cout << "Оружие: " << heavyAxe.name << " (вес: " << heavyAxe.weight << " кг)" << std::endl;
+    std::cout << "Сила персонажа: " << characterStrength << " кг" << std::endl;
+    
+    if (heavyAxe.canLift(characterStrength)) {
+        std::cout << "Результат: Оружие слишком тяжелое!" << std::endl;
+    } else {
+        std::cout << "Результат: Оружие можно поднять!" << std::endl;
+    }
+
+    std::cout << "\nПроверка методов getTotalWeight():" << std::endl;
+    
+    Weapon dagger("Кинжал", 5, 0.8f);
+    
+    float totalWeight1 = heavyAxe.getTotalWeight(dagger);
+    std::cout << "Суммарный вес " << heavyAxe.name << " и " << dagger.name 
+              << " = " << totalWeight1 << " кг" << std::endl;
+    
+    float extraWeight = 2.0f;
+    float totalWeight2 = heavyAxe.getTotalWeight(extraWeight);
+    std::cout << "Суммарный вес " << heavyAxe.name << " и доп. груза (" 
+              << extraWeight << " кг) = " << totalWeight2 << " кг" << std::endl;
+
+
+    std::cout << "\n=== Завершение программы ===" << std::endl;
+
+    return 0;
+}
+
+3)
+
+#ifndef WEAPON_H           
+#define WEAPON_H           
+
+#include <string>          
+
+class Weapon {
+private:
+    std::string name;      
+    int damage;            
+    float weight;          
+
+public:
+    
+    Weapon(std::string weaponName, int weaponDamage, float weaponWeight);  
+    Weapon();  
+    
+    ~Weapon();
+  
+    void displayInfo();                  
+    bool canLift(float maxWeight);        
+    float getTotalWeight(float otherWeight);          
+    float getTotalWeight(const Weapon& otherWeapon);  
+    
+    std::string getName() const { return name; }    
+    int getDamage() const { return damage; }       
+    float getWeight() const { return weight; }      
+};
+
+#endif    
+
+// weapon.cpp - ФАЙЛ РЕАЛИЗАЦИИ (определения методов)
+
+#include "weapon.h"        
+#include <iostream>        
+using namespace std;       
+
+Weapon::Weapon(string weaponName, int weaponDamage, float weaponWeight) {
+    name = weaponName;          
+    damage = weaponDamage;     
+    weight = weaponWeight;      
+    cout << "Создан: " << name << endl;  
+}
+
+
+Weapon::Weapon() : Weapon("Стандартный меч", 10, 2.5f) {
+    cout << "Создан объект по умолчанию" << endl;
+}
+
+Weapon::~Weapon() {
+    cout << "Удаляется оружие: " << name << endl;
+    cout << "  Урон: " << damage << endl;
+    cout << "  Вес: " << weight << " кг" << endl;
+    cout << "------------------------" << endl;
+}
+
+void Weapon::displayInfo() {
+    cout << "Информация об оружии:" << endl;
+    cout << "  Название: " << name << endl;
+    cout << "  Урон: " << damage << endl;
+    cout << "  Вес: " << weight << " кг" << endl;
+}
+
+bool Weapon::canLift(float maxWeight) {
+    return weight > maxWeight;
+}
+
+float Weapon::getTotalWeight(float otherWeight) {
+    return weight + otherWeight;  
+}
+
+float Weapon::getTotalWeight(const Weapon& otherWeapon) {
+    return getTotalWeight(otherWeapon.weight);
+}
+
+// main.cpp - ОСНОВНАЯ ПРОГРАММА
+
+#include "weapon.h"        
+#include <iostream>        
+
+using namespace std;      
+
+int main() {
+    cout << "=== ДЕМОНСТРАЦИЯ РАБОТЫ КЛАССА WEAPON ===" << endl;
+    cout << "=== (разделенная компиляция) ===" << endl << endl;
+    
+    cout << "1. СОЗДАНИЕ ОБЫЧНОГО ОБЪЕКТА:" << endl;
+    Weapon sword("Меч рыцаря", 15, 3.2f);
+    sword.displayInfo();
+    cout << endl;
+    
+    cout << "2. СОЗДАНИЕ ОБЪЕКТА ПО УМОЛЧАНИЮ:" << endl;
+    Weapon defaultWeapon;
+    defaultWeapon.displayInfo();
+    cout << endl;
+    
+    cout << "3. СОЗДАНИЕ ДИНАМИЧЕСКОГО ОБЪЕКТА:" << endl;
+    Weapon* bow = new Weapon("Лук разведчика", 8, 1.5f);
+    bow->displayInfo();  
+    cout << endl;
+    
+    cout << "4. ТЕСТИРОВАНИЕ МЕТОДА canLift():" << endl;
+    float characterStrength = 3.0f;  
+    
+    cout << "Оружие: " << sword.getName() 
+         << " (вес: " << sword.getWeight() << " кг)" << endl;
+    cout << "Сила персонажа: " << characterStrength << " кг" << endl;
+    
+    if (sword.canLift(characterStrength)) {
+        cout << "Результат: Оружие слишком тяжелое!" << endl;
+    } else {
+        cout << "Результат: Оружие можно поднять!" << endl;
+    }
+    cout << endl;
+    
+    cout << "5. ТЕСТИРОВАНИЕ ПЕРЕГРУЖЕННЫХ МЕТОДОВ getTotalWeight():" << endl;
+    
+    Weapon dagger("Кинжал", 5, 0.8f);
+    
+    float totalWithWeapon = sword.getTotalWeight(dagger);
+    cout << "Суммарный вес " << sword.getName() << " и " << dagger.getName() 
+         << " = " << totalWithWeapon << " кг" << endl;
+    
+    float extraWeight = 2.0f;
+    float totalWithNumber = sword.getTotalWeight(extraWeight);
+    cout << "Суммарный вес " << sword.getName() << " и доп. груза (" 
+         << extraWeight << " кг) = " << totalWithNumber << " кг" << endl;
+    cout << endl;
+    
+    cout << "6. УДАЛЕНИЕ ДИНАМИЧЕСКОГО ОБЪЕКТА:" << endl;
+    delete bow;  
+    cout << endl;
+    
+    cout << "=== ЗАВЕРШЕНИЕ ПРОГРАММЫ ===" << endl;
+    cout << "Автоматически вызываются деструкторы для объектов в стеке:" << endl;
+    cout << "(sword, defaultWeapon, dagger)" << endl;
+    
+    return 0;
+}
+
+4)
+
+#include <iostream>
+#include <string>
+#include <cmath>  
+
+using namespace std;
+
+class Characteristic;
+
+class Weapon {
+private:
+    string name;
+    int damage;
+    float weight;
+
+public:
+    Weapon(string weaponName, int weaponDamage, float weaponWeight) {
+        name = weaponName;
+        damage = weaponDamage;
+        weight = weaponWeight;
+    }
+    
+    Weapon() : Weapon("Стандартный меч", 10, 2.5f) {}
+    
+    string getName() const { return name; }    
+    int getDamage() const { return damage; }   
+    float getWeight() const { return weight; } 
+    
+    void setDamage(int newDamage) {
+        if (newDamage >= 0) {  
+            damage = newDamage;
+            cout << "Урон оружия " << name << " изменен на: " << damage << endl;
+        } else {
+            cout << "Ошибка: урон не может быть отрицательным!" << endl;
+        }
+    }
+    
+    friend class Characteristic;
+    
+    void displayInfo() const {
+        cout << "Информация об оружии:" << endl;
+        cout << "  Название: " << name << endl;
+        cout << "  Урон: " << damage << endl;
+        cout << "  Вес: " << weight << " кг" << endl;
+    }
+};
+
+class Characteristic {
+private:
+    int strength;  
+    
+public:
+    Characteristic(int str) : strength(str) {
+        cout << "Создан Characteristic с силой: " << strength << endl;
+    }
+    
+    int getStrength() const { return strength; }
+    
+    int GetDamage(const Weapon& weapon) const {
+        return strength + weapon.getDamage();
+    }
+    
+    int GetDamageDirect(const Weapon& weapon) const {
+        return strength + weapon.damage;
+    }
+};
+
+class MyMath {
+private:
+    static int methodCallCount;
+    
+public:
+    
+    static double Add(double a, double b) {
+        methodCallCount++;  
+        return a + b;
+    }
+    
+    static double Sub(double a, double b) {
+        methodCallCount++;  
+        return a - b;
+    }
+    
+    static double Mult(double a, double b) {
+        methodCallCount++;  
+        return a * b;
+    }
+    
+    static double Div(double a, double b) {
+        methodCallCount++;  
+        if (fabs(b) < 0.000001) { 
+            cout << "Ошибка: деление на ноль!" << endl;
+            return 0;
+        }
+        return a / b;
+    }
+    
+    static int getCallCount() {
+        return methodCallCount;
+    }
+    
+    static void resetCallCount() {
+        methodCallCount = 0;
+    }
+};
+
+int MyMath::methodCallCount = 0;
+
+int main() {
+    cout << "=== Часть 1-4: Работа с GET/SET методами Weapon ===" << endl;
+    
+    Weapon sword("Меч дракона", 25, 4.5f);
+    
+    cout << "\n1. Проверка GET-методов:" << endl;
+    cout << "Название: " << sword.getName() << endl;
+    cout << "Урон: " << sword.getDamage() << endl;
+    cout << "Вес: " << sword.getWeight() << " кг" << endl;
+    
+    cout << "\n2. Проверка SET-метода для урона:" << endl;
+    sword.displayInfo();
+    
+    sword.setDamage(30);
+    sword.displayInfo();
+    
+    sword.setDamage(-5);
+    
+    cout << "\n=== Часть 5-8: Класс Characteristic и дружественность ===" << endl;
+    
+    Characteristic hero(15);  // Персонаж с силой 15
+    
+    cout << "\nСила персонажа: " << hero.getStrength() << endl;
+    
+    int totalDamage = hero.GetDamage(sword);
+    cout << "Суммарный урон (сила + урон оружия): " << totalDamage << endl;
+    cout << "  Сила: " << hero.getStrength() << endl;
+    cout << "  Урон меча: " << sword.getDamage() << endl;
+    cout << "  Итого: " << totalDamage << endl;
+    
+    cout << "\nПроверка дружественности (прямой доступ к приватному полю):" << endl;
+    int directDamage = hero.GetDamageDirect(sword);
+    cout << "Прямой доступ к weapon.damage: " << directDamage << endl;
+    
+    cout << "\n=== Часть 9-13: Класс MyMath со статическими методами ===" << endl;
+    
+    MyMath::resetCallCount();
+    
+    double x = 10.5, y = 3.2;
+    
+    cout << "\n12. Проверка статических методов MyMath:" << endl;
+    cout << "Исходные числа: x = " << x << ", y = " << y << endl << endl;
+    
+    cout << "Сложение: " << x << " + " << y << " = ";
+    cout << MyMath::Add(x, y) << endl;
+    
+    cout << "Вычитание: " << x << " - " << y << " = ";
+    cout << MyMath::Sub(x, y) << endl;
+    
+    cout << "Умножение: " << x << " * " << y << " = ";
+    cout << MyMath::Mult(x, y) << endl;
+    
+    cout << "Деление: " << x << " / " << y << " = ";
+    cout << MyMath::Div(x, y) << endl;
+    
+    cout << "\nПроверка деления на ноль:" << endl;
+    cout << "5 / 0 = " << MyMath::Div(5, 0) << endl;
+    
+    cout << "\nДополнительные вызовы:" << endl;
+    cout << "100 + 50 = " << MyMath::Add(100, 50) << endl;
+    cout << "7 * 8 = " << MyMath::Mult(7, 8) << endl;
+    
+    cout << "\n13. Проверка статической переменной:" << endl;
+    int totalCalls = MyMath::getCallCount();
+    cout << "Всего вызовов статических методов: " << totalCalls << endl;
+    
+    cout << "\nПодсчет вручную:" << endl;
+    cout << "1. Add(x, y)" << endl;
+    cout << "2. Sub(x, y)" << endl; 
+    cout << "3. Mult(x, y)" << endl;
+    cout << "4. Div(x, y)" << endl;
+    cout << "5. Div(5, 0) - тоже считается!" << endl;
+    cout << "6. Add(100, 50)" << endl;
+    cout << "7. Mult(7, 8)" << endl;
+    cout << "Итого: 7 вызовов" << endl;
+    
+    cout << "\n=== Дополнительная демонстрация ===" << endl;
+    
+    Weapon bow("Лук эльфа", 12, 1.8f);
+    Characteristic archer(8);
+    
+    cout << "\nНовое оружие:" << endl;
+    bow.displayInfo();
+    
+    cout << "\nНовый персонаж:" << endl;
+    cout << "Сила лучника: " << archer.getStrength() << endl;
+    
+    int bowDamage = archer.GetDamage(bow);
+    cout << "Суммарный урон лучника: " << bowDamage << endl;
+    
+    cout << "\nУлучшаем лук:" << endl;
+    bow.setDamage(18);
+    bowDamage = archer.GetDamage(bow);
+    cout << "Суммарный урон после улучшения: " << bowDamage << endl;
+    
+    cout << "\nЕще математические операции:" << endl;
+    cout << "Круговая площадь (радиус=5): " << MyMath::Mult(3.14159, MyMath::Mult(5, 5)) << endl;
+    
+    cout << "\nИтоговое количество вызовов MyMath: " << MyMath::getCallCount() << endl;
+    
+    return 0;
+}
