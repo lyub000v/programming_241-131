@@ -1,0 +1,99 @@
+#include <iostream>
+#include <string>
+#include <ctime> 
+
+enum class YearErrorCode {
+    TOO_OLD,        
+    NOT_BORN_YET,   
+    NEGATIVE        
+};
+
+class YearBirthException : public std::exception {
+private:
+    YearErrorCode errorCode;
+    
+public:
+    YearBirthException(YearErrorCode code) : errorCode(code) {}
+    
+    YearErrorCode getErrorCode() const {
+        return errorCode;
+    }
+    
+    const char* what() const noexcept override {
+        switch(errorCode) {
+            case YearErrorCode::TOO_OLD:
+                return "Год рождения слишком старый";
+            case YearErrorCode::NOT_BORN_YET:
+                return "Год рождения в будущем";
+            case YearErrorCode::NEGATIVE:
+                return "Отрицательный год рождения";
+            default:
+                return "Неизвестная ошибка с годом рождения";
+        }
+    }
+};
+
+int main() {
+    try {
+        std::cout << "Введите число 1, 2 или 3: ";
+        int number;
+        std::cin >> number;
+        
+        switch(number) {
+            case 1:
+                std::cout << "Один" << std::endl;
+                break;
+            case 2:
+                std::cout << "Два" << std::endl;
+                break;
+            case 3:
+                std::cout << "Три" << std::endl;
+                break;
+            default:
+                throw std::invalid_argument("Некорректное значение для числа");
+        }
+        
+        std::cout << "Введите год вашего рождения: ";
+        int birthYear;
+        std::cin >> birthYear;
+        
+        std::time_t currentTime = std::time(nullptr);
+        std::tm* timeInfo = std::localtime(&currentTime);
+        int currentYear = timeInfo->tm_year + 1900; 
+        
+        if (birthYear < 1850) {
+            throw YearBirthException(YearErrorCode::TOO_OLD);
+        } else if (birthYear > currentYear) {
+            throw YearBirthException(YearErrorCode::NOT_BORN_YET);
+        } else if (birthYear < 0) {
+            throw YearBirthException(YearErrorCode::NEGATIVE);
+        }
+        
+        std::cout << "Спасибо!" << std::endl;
+        
+    }
+    catch (const std::invalid_argument& e) {
+        std::cerr << "Некорректное значение" << std::endl;
+    }
+    catch (const YearBirthException& e) {
+        switch(e.getErrorCode()) {
+            case YearErrorCode::TOO_OLD:
+                std::cerr << "Что-то не верится..." << std::endl;
+                break;
+            case YearErrorCode::NOT_BORN_YET:
+                std::cerr << "Вы ещё не родились" << std::endl;
+                break;
+            case YearErrorCode::NEGATIVE:
+                std::cerr << "Вы ввели отрицательное число!" << std::endl;
+                break;
+        }
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Произошла ошибка: " << e.what() << std::endl;
+    }
+    catch (...) {
+        std::cerr << "Неизвестная ошибка!" << std::endl;
+    }
+    
+    return 0;
+}
