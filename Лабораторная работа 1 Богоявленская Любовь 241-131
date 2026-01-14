@@ -42,32 +42,3 @@ int main() {
 
 }
 
-2)
-
-#include <iostream>
-#include <string>
-
-int main() {
-    int number150 = 150;
-    float floatNumber = 15.933f;
-    std::cout << "number150 = " << number150 << std::endl;
-
-    std::cout << "floatNumber = " << floatNumber << std::endl;
-    std::cout << "smallNumber = " << static_cast<int>(smallNumber) << std::endl;
-
-    unsigned char day = 15;          
-    std::string month = "сентября";   
-    short year = 1990;                
-
-    std::cout << "Моя дата рождения: " 
-              << static_cast<int>(day) << " " 
-              << month << " "
-              << year << " года" << std::endl;
-    
-    const std::string osName = "WINDOWS";   
-
-    std::cout << version << " " << osName << std::endl;
-
-    return 0;
-    
-}
