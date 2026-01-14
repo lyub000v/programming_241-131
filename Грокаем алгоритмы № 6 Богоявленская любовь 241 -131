@@ -11,8 +11,8 @@ int main() {
     int N, S, F;
     cin >> N >> S >> F;
     
-    S--; // Приводим к 0-based индексации
-    F--; // Приводим к 0-based индексации
+    S--; 
+    F--;
     
     vector<vector<int>> graph(N, vector<int>(N));
     
@@ -24,7 +24,7 @@ int main() {
     
 
     vector<int> dist(N, INT_MAX);
-    dist[S] = 0;  // Расстояние от S до S равно 0
+    dist[S] = 0;  
     
     vector<bool> visited(N, false);
     
@@ -123,4 +123,147 @@ int main() {
 }
 
 2)
+
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <climits>
+
+using namespace std;
+
+int main() {
+    int N;
+    cin >> N;
+    vector<int> prices(N + 1);
+    for (int i = 1; i <= N; i++) {
+        cin >> prices[i];
+    }
+    
+    int M;
+    cin >> M;
+    
+    vector<vector<int>> graph(N + 1);
+    
+    for (int i = 0; i < M; i++) {
+        int u, v;
+        cin >> u >> v;
+        
+        graph[u].push_back(v);
+        graph[v].push_back(u);
+    }
+    
+    cout << "Начинаем поиск оптимального маршрута из города 1 в город " << N << endl;
+    cout << "=========================================================" << endl;
+    
+    cout << "\nСтоимость бензина в городах:" << endl;
+    for (int i = 1; i <= N; i++) {
+        cout << "Город " << i << ": " << prices[i] << endl;
+    }
+    
+    cout << "\nДороги между городами:" << endl;
+    for (int i = 1; i <= N; i++) {
+        if (!graph[i].empty()) {
+            cout << "Город " << i << " соединен с: ";
+            for (int neighbor : graph[i]) {
+                cout << neighbor << " ";
+            }
+            cout << endl;
+        }
+    }
+    
+    vector<int> dist(N + 1, INT_MAX);
+    dist[1] = 0;  // Начинаем в городе 1, стоимость = 0
+    
+    priority_queue<pair<int, int>, 
+                   vector<pair<int, int>>, 
+                   greater<pair<int, int>>> pq;
+    
+    pq.push({0, 1});
+    
+    vector<bool> visited(N + 1, false);
+    
+    cout << "\nЗапускаем модифицированный алгоритм Дейкстры..." << endl;
+    cout << "Правила:" << endl;
+    cout << "1. За одну дорогу расходуется 1 бак бензина" << endl;
+    cout << "2. Бензин покупается только в текущем городе" << endl;
+    cout << "3. Запасаться бензином нельзя" << endl;
+    cout << "=================================================" << endl;
+    
+    int step = 0;
+    
+    while (!pq.empty()) {
+        int currentCost = pq.top().first;
+        int currentCity = pq.top().second;
+        pq.pop();
+        
+        step++;
+        cout << "\nШаг " << step << ": Обрабатываем город " << currentCity << endl;
+        cout << "Текущая стоимость пути до этого города: " << currentCost << endl;
+        
+        if (visited[currentCity]) {
+            cout << "Город уже обработан с лучшей стоимостью, пропускаем" << endl;
+            continue;
+        }
+        
+        visited[currentCity] = true;
+        
+        if (currentCity == N) {
+            cout << "✓ Достигнут конечный город " << N << "!" << endl;
+            break;
+        }
+        
+        for (int neighbor : graph[currentCity]) {
+            cout << "  Проверяем переход в город " << neighbor << ":" << endl;
+            
+            int newCost = currentCost + prices[currentCity];
+            
+            cout << "    Текущая стоимость пути до " << neighbor << ": " << dist[neighbor] << endl;
+            cout << "    Новая стоимость: " << currentCost << " + " 
+                 << prices[currentCity] << " = " << newCost << endl;
+            
+            if (newCost < dist[neighbor]) {
+                dist[neighbor] = newCost;
+                pq.push({newCost, neighbor});
+                
+                cout << "    ✓ Обновляем стоимость! Новое значение: " << newCost << endl;
+            } else {
+                cout << "    ✗ Не обновляем (текущий путь не дешевле)" << endl;
+            }
+        }
+        
+        cout << "\nТекущие минимальные стоимости достижения городов:" << endl;
+        for (int i = 1; i <= N; i++) {
+            if (dist[i] == INT_MAX) {
+                cout << "  Город " << i << ": ∞" << endl;
+            } else {
+                cout << "  Город " << i << ": " << dist[i] << endl;
+            }
+        }
+        cout << "-------------------------------------------------" << endl;
+    }
+    
+    // Шаг 4: Вывод результата
+    cout << "\n=================================================" << endl;
+    cout << "РЕЗУЛЬТАТ:" << endl;
+    cout << "=================================================" << endl;
+    
+    if (dist[N] == INT_MAX) {
+        cout << "Пути из города 1 в город " << N << " не существует!" << endl;
+        cout << -1 << endl;
+    } else {
+        cout << "Минимальная стоимость пути из города 1 в город " << N 
+             << " = " << dist[N] << endl;
+        cout << "Ответ: " << dist[N] << endl;
+    
+        cout << "\nДетали оптимального маршрута:" << endl;
+        cout << "Каждый переход стоит столько, сколько бензин в городе отправления" << endl;
+        
+        if (N <= 10) {  // Восстанавливаем путь только для небольших графов
+            cout << "Пример: если оптимальный путь 1→3→5→" << N 
+                 << ", то стоимость = price[1] + price[3] + price[5]" << endl;
+        }
+    }
+    
+    return 0;
+}
 
