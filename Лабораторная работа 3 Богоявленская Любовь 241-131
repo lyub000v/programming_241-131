@@ -1,0 +1,113 @@
+1)
+
+#include <iostream>
+
+using namespace std;
+
+int main() {
+    int myVariable = 42; 
+    
+    int* myPointer = &myVariable;  
+                                  
+    
+    cout << "Адрес указателя (адрес переменной): " << myPointer << endl;
+    cout << "Значение по адресу: " << *myPointer << endl;  
+                                                          
+    
+    *myPointer = 100; 
+    
+    cout << "Проверка переменной myVariable после изменения через указатель: " 
+         << myVariable << endl;  
+    
+    int myArray[5] = {10, 20, 30, 40, 50};  
+    
+    int* arrayPtr = myArray;  
+    cout << "\nЭлементы массива через указатель: ";
+    for (int i = 0; i < 5; i++) {
+        cout << *(arrayPtr + i) << " ";  
+    }
+    cout << endl;
+    
+    int anotherVariable = 5;
+    
+    int* const constPointer = &anotherVariable;  
+    
+    int otherVariable = 7;
+    
+    *constPointer = 15;  
+    
+    cout << "\nПроверка anotherVariable после изменения через const указатель: " 
+         << anotherVariable << endl;  
+    
+    return 0; 
+}
+
+2)
+
+#include <iostream>
+
+using namespace std;
+
+int arraySum(int* start, int* end) {
+    int sum = 0;
+    for (int* ptr = start; ptr < end; ++ptr) {
+        sum += *ptr; 
+    }
+    return sum;
+}
+
+int sum(int a, int b) {
+    return a + b;  
+}
+
+int difference(int a, int b) {
+    return a - b;  
+}
+
+int (*getOperation(char op))(int, int) {
+    if (op == '+') {
+        return &sum; 
+    } else if (op == '-') {
+        return &difference;  
+    } else {
+        return nullptr;  
+    }
+}
+
+int main() {
+    int numbers[] = {10, 20, 30, 40, 50};  
+    int size = sizeof(numbers) / sizeof(numbers[0]);  
+    
+    int total = arraySum(numbers, numbers + size);
+    cout << "Сумма элементов массива: " << total << endl;  
+    
+    char operation = '+';
+    int x = 15, y = 7;  
+    
+    int (*operationFunc)(int, int) = getOperation(operation);
+    
+    if (operationFunc != nullptr) {
+        int result = operationFunc(x, y);
+        cout << "Результат операции " << operation << ": " 
+             << x << " " << operation << " " << y << " = " << result << endl;
+        
+        operation = '-';
+        operationFunc = getOperation(operation);
+        
+        if (operationFunc != nullptr) {
+            result = operationFunc(x, y);
+            cout << "Результат операции " << operation << ": " 
+                 << x << " " << operation << " " << y << " = " << result << endl;
+        }
+    }
+    
+    float* dynamicFloat = new float(3.14159f);  
+    
+    cout << "\nДинамическая переменная float: " << *dynamicFloat << endl;
+    cout << "Адрес динамической переменной: " << dynamicFloat << endl;
+    
+    delete dynamicFloat;  
+    dynamicFloat = nullptr;  
+    
+    return 0;
+}
